@@ -25,10 +25,22 @@ int main(void)
 }
 Para este código, responda: (a) A variável i é armazenada na memória RAM ou ROM? Por quê? (b) O programa compilado a partir deste código é armazenado na memória RAM ou ROM? Por quê?
 
-  (a) A variável é armazenada na memória RAM, já que ela é usada como uma variável acessória e não tem necessidade
+  (a) A variável é armazenada na memória RAM, pois como a variável é reciclada a cada vez que o programa é rodado, não tendo necessidade de
+  guardá-la de maneira permanete.
+  
+  (b) O programa compilado é armazenado na ROM, já que uma vez que o programa é compilado, basta  executá-lo novamente, mesmo depois
+  de ter desligado a máquina uma vez, ele rodará novamente sem necessidade de outra compilação.
 
 Quais são as diferenças, vantagens e desvantagens das arquiteturas Harvard e Von Neumann?
 
+  
+
 Considere a variável inteira i, armazenando o valor 0x8051ABCD. Se i é armazenada na memória a partir do endereço 0x0200, como ficam este byte e os seguintes, considerando que a memória é: (a) Little-endian; (b) Big-endian.
 
+  (a) Para a memória little endian o valor do LSB é armazenado na menor posição da memória. 0x200 guarda CD, 0x201 guarda AB, 0x202 guarda 51 e 0x203 guarda 80.
+  
+  (b) Para a big endian ocorre o contrário da little endian, ou seja, o MSB é guardado na menor posição da memória. Desta forma em 0x200 seria guardado o valor 80.
+
 Sabendo que o processador do MSP430 tem registradores de 16 bits, como ele soma duas variáveis de 32 bits?
+
+  É necessário que ele faça a operação em duas partes, trabalhando com a variável de 32 bits como se fosse duas variáveis de 16.
