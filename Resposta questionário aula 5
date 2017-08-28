@@ -34,9 +34,9 @@ R: CMP.W R7, R8
 
 4 - "Traduza" o seguinte trecho de código em C para o assembly do MSP430: for(i=0; i<100; i++) A[i] = i*2;
 
-R: Loop:
-   CLR R7 
+R: CLR R7 
    ADD.W #100, R11
+   Loop:
    CMP.W R11, R7      ; flag N -> 1 
    JN Sub1
    EXIT
@@ -44,6 +44,20 @@ R: Loop:
    RLA R7             ; r7 = 2*r7
    MOV.W R7, R7(R9)
    ADD.W #1, R7
-   JUMP Loop  
+   JMP Loop  
 
 5 - "Traduza" o seguinte trecho de código em C para o assembly do MSP430: for(i=99; i>=0; i--) A[i] = i*2;
+
+R: Loop: 
+   CLR R7
+   CLR R11
+   ADD.W #99, R7
+   CMP R7, R11         ; R11 - R7 < 1, FLAG N -> 1
+   JN Sub1
+   EXIT
+   Sub1:
+   RLA R7
+   MOV.W R7, R7(R9)
+   SUB.W #1, R7
+   JMP Loop
+   
