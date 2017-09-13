@@ -1,0 +1,205 @@
+Para todas as questões, utilize os LEDs e/ou os botões da placa Launchpad do MSP430.
+
+1. Escreva um código em C que pisca os LEDs ininterruptamente.
+
+#include<msp430g2553.h>
+
+void atraso(volatile unsigned int x)
+{
+  TACCR0 = 1000-1;
+  TACTL |= TACLR;
+  TACTL = TASSEL_2 + ID_0 + MC_1;
+  while(x>0)
+  {
+    x--;
+    while((TACTL & TAIFG) == 0);
+    TACTL &=~TAIFG;
+  }
+  TACTL = MC_0;
+}
+
+void main(void)
+  {
+    volatile int i, x;
+    WDTCTL = WDTPW + WDTHOLD;
+    P1DIR = BIT6 + BIT0;
+    P1OUT = BIT6 + BIT0;
+    x = 1000;
+    while(1)
+    {
+        P1OUT ^= BIT6 + BIT0;
+        atraso(x);
+    }
+  }
+
+
+
+2. Escreva um código em C que pisca os LEDs ininterruptamente. No ciclo que pisca os LEDs, o tempo que os LEDs ficam ligados deve ser duas vezes maior do que o tempo que eles ficam desligados.
+
+#include<msp430g2553.h>
+
+void atraso(volatile unsigned int x)
+{
+  TACCR0 = 1000-1;
+  TACTL |= TACLR;
+  TACTL = TASSEL_2 + ID_0 + MC_1;
+  while(x>0)
+  {
+    x--;
+    while((TACTL & TAIFG) == 0);
+    TACTL &=~TAIFG;
+  }
+  TACTL = MC_0;
+}
+
+void main(void)
+  {
+    volatile int i, x, y;
+    WDTCTL = WDTPW + WDTHOLD;
+    P1DIR = BIT6 + BIT0;
+    P1OUT = BIT6 + BIT0;
+    x = 2000;
+    y = 2*x;
+    while(1)
+    {
+        P1OUT ^= BIT6 + BIT0;
+        atraso(x);
+        P1OUT ^= BIT6 + BIT0;
+        atraso(y);
+    }
+  }
+
+3. Escreva um código em C que acende os LEDs quando o botão é pressionado.
+
+#include <msp430g2553.h>
+
+#define LED1 BIT0
+#define LED2 BIT6
+
+
+
+
+
+void main(void)
+{
+    volatile int i;
+    WDTCTL = WDTPW + WDTHOLD;
+    P1DIR = LED1 + LED2;
+    P1OUT |= BIT3;
+    P1REN |= BIT3;
+    
+    while (1)
+    {
+
+        if (BIT3 & P1IN)
+        {
+            P1OUT = ~0x41;
+
+        }else
+        {
+            P1OUT |= 0x41;
+        }
+    }
+}
+
+4. Escreva um código em C que pisca os LEDs ininterruptamente somente se o botão for pressionado.
+
+#include <msp430g2553.h>
+
+#define LED1 BIT0
+#define LED2 BIT6
+
+
+void atraso(volatile unsigned int x)
+{
+  TACCR0 = 1000-1;
+  TACTL |= TACLR;
+  TACTL = TASSEL_2 + ID_0 + MC_1;
+  while(x>0)
+  {
+    x--;
+    while((TACTL & TAIFG) == 0);
+    TACTL &=~TAIFG;
+  }
+  TACTL = MC_0;
+}
+
+
+void main(void)
+{
+    volatile int i, x;
+    WDTCTL = WDTPW + WDTHOLD;
+    P1DIR = LED1 + LED2;
+    P1OUT |= BIT3;
+    P1REN |= BIT3;
+    x = 1000;
+    
+    while (1)
+    {
+
+        if (BIT3 & P1IN)
+        {
+            P1OUT = ~0x41;
+
+        }else
+        {
+            P1OUT ^= BIT6 + BIT0;
+            atraso(x);
+        }
+    }
+}
+
+5. Escreva um código em C que acende os LEDs quando o botão é pressionado. Deixe o MSP430 em modo de baixo consumo, e habilite a interrupção do botão.
+
+#include <msp430g2553.h>
+#include <legacymsp430.h> // Para rodar interrupcoes
+
+
+#define LED1 BIT0
+#define LED2 BIT6
+#define LEDS (LED1|LED2)
+#define BTN  BIT3
+
+void atraso(volatile unsigned int x)
+{
+  TACCR0 = 1000-1;
+  TACTL |= TACLR;
+  TACTL = TASSEL_2 + ID_0 + MC_1;
+  while(x>0)
+  {
+    x--;
+    while((TACTL & TAIFG) == 0);
+    TACTL &=~TAIFG;
+  }
+  TACTL = MC_0;
+}
+
+
+int main(void)
+{
+	WDTCTL = WDTPW | WDTHOLD;
+	P1OUT &= ~LEDS;
+	P1DIR |= LEDS;
+	P1DIR &= ~BTN;
+	P1REN |= BTN;
+	P1OUT |= BTN;
+	P1IES |= BTN;
+	P1IE |= BTN;
+	_BIS_SR(GIE + LPM4_bits);
+	return 0;
+        
+        while(1)
+	{
+		atraso(0xFFFF);
+		P1OUT ^= LEDS;
+	}
+	return 0;
+}
+
+interrupt(PORT1_VECTOR) Interrupcao_P1(void)
+{
+	P1OUT ^= LEDS;
+	while((P1IN&BTN)==0);
+	P1OUT ^= LEDS;
+	P1IFG &= ~BTN;
+}
