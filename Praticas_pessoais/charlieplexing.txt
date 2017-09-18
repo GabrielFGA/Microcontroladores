@@ -1,0 +1,73 @@
+#include <msp430.h> 
+
+unsigned int i = 0;
+unsigned int acender[6];
+unsigned int conta = 0;
+
+int main(void)
+{
+	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
+	while(1){
+        for(i=1; i<7; i++){
+            acender[i] = i;
+            ACENDE(acender[i]);
+
+            for(conta=0; conta<2000; conta++){
+
+            }
+
+        }
+	}
+	return 0;
+
+}
+
+int ACENDE(unsigned int acender){
+    switch (acender){
+    case 1:
+        P1DIR &= 0x00;
+        P1DIR |= BIT1 + BIT2; // BIT1 E BIT2 VIRAM SAÍDAS
+        P1OUT = BIT1;
+        P1OUT = ~BIT2; //BIT2 -> L , BIT1 -> H
+        //P1DIR &=~ BIT3; //BIT3 VIRA ENTRADA
+        break;
+    case 2:
+        P1DIR &= 0x00;
+        P1DIR |= BIT3 + BIT2; // BIT3 E BIT2 VIRAM SAÍDAS
+        P1OUT = BIT2;
+        P1OUT = ~BIT3; //
+       // P1DIR &=~ BIT1; //BIT1 VIRA ENTRADA
+        break;
+    case 3:
+        P1DIR &= 0x00;
+        P1DIR |= BIT1 + BIT2; // BIT1 E BIT2 VIRAM SAÍDAS
+        P1OUT = BIT2;
+        P1OUT = ~BIT1; //
+        //P1DIR &=~ BIT3; //BIT3 VIRA ENTRADA
+        break;
+    case 4:
+        P1DIR &= 0x00;
+        P1DIR |= BIT3 + BIT2; // BIT3 E BIT2 VIRAM SAÍDAS
+        P1OUT = BIT3;
+        P1OUT = ~BIT2; //BIT2 ->
+       // P1DIR &=~ BIT1; //BIT1 VIRA ENTRADA
+        break;
+    case 5:
+        P1DIR &= 0x00;
+        P1DIR |= BIT3 + BIT1; // BIT3 E BIT1 VIRAM SAÍDAS
+        P1OUT = BIT1;
+        P1OUT = ~BIT3; //BIT3 -> H
+      //  P1DIR &=~ BIT2; //BIT2 VIRA ENTRADA
+        break;
+    case 6:
+        P1DIR &= 0x00;
+        P1DIR |= BIT3 + BIT1; // BIT3 E BIT1 VIRAM SAÍDAS
+        P1OUT = BIT3;
+        P1OUT = ~BIT1; //BIT3 -> H
+      //  P1DIR &=~ BIT2; //BIT2 VIRA ENTRADA
+        break;
+    }
+
+    return 0;
+}
+
