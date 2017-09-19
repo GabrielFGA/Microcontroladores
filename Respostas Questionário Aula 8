@@ -92,49 +92,26 @@ int main(void)
 
 4. Escreva um código em C que pisca os LEDs ininterruptamente somente se o botão for pressionado.
 
-#include <msp430g2553.h>
+#include <msp430.h>
 
-#define LED1 BIT0
-#define LED2 BIT6
+unsigned int i;
 
-
-void atraso(volatile unsigned int x)
+int main(void)
 {
-  TACCR0 = 1000-1;
-  TACTL |= TACLR;
-  TACTL = TASSEL_2 + ID_0 + MC_1;
-  while(x>0)
-  {
-    x--;
-    while((TACTL & TAIFG) == 0);
-    TACTL &=~TAIFG;
-  }
-  TACTL = MC_0;
-}
+	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
+	P1DIR = BIT0; // seta o bit0 como saída
+	P1REN |= BIT3;//resistor
+	P1OUT |= BIT3;//resistor de pull up
 
-
-void main(void)
-{
-    volatile int i, x;
-    WDTCTL = WDTPW + WDTHOLD;
-    P1DIR = LED1 + LED2;
-    P1OUT |= BIT3;
-    P1REN |= BIT3;
-    x = 1000;
-    
-    while (1)
-    {
-
-        if (BIT3 & P1IN)
-        {
-            P1OUT = ~0x41;
-
-        }else
-        {
-            P1OUT ^= BIT6 + BIT0;
-            atraso(x);
-        }
-    }
+	while(1){
+	    if(BIT3 & P1IN){ // se saida for =1 botão não ta pressionado
+	        P1OUT = ~BIT0;
+	    }else{
+	        P1OUT ^= BIT0;// se tiver apertado, seta o bit0
+	        for(i=0; i<5000; i++){}
+	    }
+	}
+	return 0;
 }
 
 5. Escreva um código em C que acende os LEDs quando o botão é pressionado. Deixe o MSP430 em modo de baixo consumo, e habilite a interrupção do botão.
